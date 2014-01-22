@@ -1,0 +1,53 @@
+buildscript {
+    repositories {
+        maven { url "http://repo.spring.io/libs-milestone" }
+        mavenLocal()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:0.5.0.M7")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'spring-boot'
+
+jar {
+    baseName = 'example-cloudbigdata-app-webinterface'
+    version =  '0.1.0'
+}
+
+
+
+repositories {
+    mavenCentral()
+    maven { url "http://repo.spring.io/libs-milestone" }
+}
+
+dependencies {
+    // spring boot
+    compile("org.springframework.boot:spring-boot-starter-web:0.5.0.M7")
+    // spring security
+    compile("org.springframework.boot:spring-boot-starter-security:0.5.0.M7")
+    compile("org.springframework.security:spring-security-openid:3.2.0.RELEASE")
+    compile("org.springframework.security:spring-security-ldap:3.2.0.RELEASE")
+    compile("org.apache.directory.server:apacheds-server-jndi:1.5.5")
+    // spring web socket + messaging
+    compile("org.springframework.boot:spring-boot-starter-websocket:0.5.0.M7")
+    compile("org.springframework:spring-messaging:4.0.0.RELEASE")
+    // spring jpa data
+    compile("org.springframework.data:spring-data-jpa:1.4.2.RELEASE")
+    compile("org.hibernate:hibernate-entitymanager:4.2.8.Final")
+    compile("com.h2database:h2:1.3.174")
+    // convert java object to javascript
+    compile("com.fasterxml.jackson.core:jackson-databind")
+    // thymeleaf
+    compile("org.thymeleaf:thymeleaf-spring3:2.1.2.RELEASE")
+    compile("org.eclipse.persistence:eclipselink:2.5.1")
+    // odata4j
+    compile("org.odata4j:odata4j-dist:0.7.0")
+    // testing
+    testCompile("junit:junit:4.11")
+}
+
