@@ -61,7 +61,7 @@ objectClass: groupOfUniqueNames
 cn: admins
 uniqueMember: uid=foobar,ou=users,o=companyexample,dc=example,dc=com
 
-dn: cn=salesde,ou=exampleapp,,dc=example,dc=com
+dn: cn=salesde,ou=exampleapp,o=companyexample,dc=example,dc=com
 objectClass: top
 objectClass: groupOfUniqueNames
 cn: salesde
