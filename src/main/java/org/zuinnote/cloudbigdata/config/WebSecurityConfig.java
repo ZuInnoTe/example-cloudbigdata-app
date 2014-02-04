@@ -38,7 +38,7 @@ import  org.zuinnote.cloudbigdata.security.OpenIDLDAPUserDetailsService;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-// allow the following urls with authentication (POST)
+
         http
             .authorizeRequests()
 		// allow the followin urls without authentication (GET)
@@ -47,7 +47,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		.antMatchers("/cloudbigdata/img/openid/*").permitAll();
 // allow all other urls with authentication (GET)
 	http
-            .authorizeRequests().anyRequest().authenticated();
+           .authorizeRequests().anyRequest().authenticated();
 // allow form based login for in memory or ldap authentication
         http
             .formLogin()
@@ -86,6 +86,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.groupSearchBase("ou=exampleapp,o=companyexample")
 				.contextSource()
 					.ldif("classpath:example.ldif").root("dc=example,dc=com");
-
-    }
+   		
+ }
 }

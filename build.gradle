@@ -44,9 +44,6 @@ dependencies {
     compile("com.fasterxml.jackson.core:jackson-databind")
     // thymeleaf
     compile("org.thymeleaf:thymeleaf-spring3:2.1.2.RELEASE")
-    compile("org.eclipse.persistence:eclipselink:2.5.1")
-    // odata4j
-    compile("org.odata4j:odata4j-dist:0.7.0")
     // testing
     testCompile("junit:junit:4.11")
 }
