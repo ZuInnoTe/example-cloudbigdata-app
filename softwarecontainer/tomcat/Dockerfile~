@@ -1,0 +1,23 @@
+# creates a software container for the tomcat web application server
+FROM base:ubuntu-12.10
+MAINTAINER ZuInnoTe
+# create user
+RUN useradd -r tomcat -g daemon
+# install software (curl to download files, jdk to run java applications and jsvc to run tomcat as a daemon)
+RUN apt-get update
+RUN apt-get -y install curl openjdk-7-jre
+RUN curl -O http://artfiles.org/apache.org/tomcat/tomcat-7/v7.0.50/bin/apache-tomcat-7.0.50.tar.gz
+RUN mkdir -p /opt/server/tomcat/
+RUN tar xf apache-tomcat-7.0.50.tar.gz -C /opt/server/tomcat
+RUN chgrp -R daemon /opt/server/tomcat
+RUN chown -R tomcat /opt/server/tomcat
+# configure environment variables
+ENV JAVA_HOME /usr/lib/jvm/default-java
+ENV CATALINA_HOME /opt/server/tomcat
+ENV CLASSPATH /opt/server/tomcat/bin/bootstrap.jar:/opt/server/tomcat/bin/tomcat-juli.jar
+# fix localhost resolution
+ENV CATALINA_BASE /opt/server/tomcat
+RUN sed -i "s/^127.0.0.1/127.0.0.1 $(hostname) /" /etc/hosts
+# start server
+CMD su - tomcat /opt/server/tomcat/bin/startup.sh
+EXPOSE 8080

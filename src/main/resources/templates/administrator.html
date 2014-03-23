@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head> 
+    <title>Getting Started: Serving Web Content</title> 
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link href="/cloudbigdata/css/simplelayout.css" type="text/css" rel="stylesheet" />
+</head>
+<body>
+
+	<div>
+		<div id="header" th:include="header :: header">
+		</div>
+		<div id="menu" th:include="menu :: menu">
+		</div>
+		<div id="content">
+			Welcome to the administrator page
+		</div>
+		<div id="footer" th:include="footer :: footer">
+		</div>
+</div>
+</body>
+</html>
