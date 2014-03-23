@@ -23,6 +23,8 @@
 
 package org.zuinnote.cloudbigdata;
 
+import org.apache.log4j.Logger;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -41,6 +43,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import org.springframework.ldap.core.support.LdapContextSource;
+import org.springframework.ldap.core.LdapTemplate;
+
+
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
@@ -53,7 +59,11 @@ import org.springframework.data.domain.Pageable;
 
 import org.zuinnote.cloudbigdata.jpadata.Customer;
 import org.zuinnote.cloudbigdata.jpadata.CustomerRepository;
-
+import org.zuinnote.cloudbigdata.configmanager.ConfigManagerFactory;
+import org.zuinnote.cloudbigdata.configmanager.ConfigManagerInterface;
+import org.zuinnote.cloudbigdata.usermanager.OpenIDUserDetailsService;
+import org.zuinnote.cloudbigdata.usermanager.UserManagerInterface;
+import org.zuinnote.cloudbigdata.usermanager.UserManagerFactory;
 
 @Configuration
 @EnableJpaRepositories
@@ -61,9 +71,11 @@ import org.zuinnote.cloudbigdata.jpadata.CustomerRepository;
 @EnableAutoConfiguration
 public class Application {
 
+private static Logger log = Logger.getLogger(Application.class.getName());
     public static void main(String[] args) {
 	// Start Spring-Application (for testing purposes)
         ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
+	
 	// Load test data for testing purposes
         CustomerRepository repository = context.getBean(CustomerRepository.class);
 
@@ -81,6 +93,59 @@ public class Application {
     public DataSource dataSource() {
         return new EmbeddedDatabaseBuilder().setType(H2).build();
     }
+
+    /** Configuration bean that can be used throughout the application for its configuration **/
+    @Bean
+    public ConfigManagerInterface configManager() {
+	return ConfigManagerFactory.getConfigManager();
+    }
+
+    @Bean
+    public OpenIDUserDetailsService openIDUserDetailsService() {
+	return new OpenIDUserDetailsService();
+    }
+
+    @Bean
+    public UserManagerInterface userManager() {
+	return UserManagerFactory.getUserManager();
+    }
+
+    @Bean
+    public LdapContextSource ldapContextSource() {
+	// if configuration == embedded, use default shipped ldif
+	if (new String("embedded").equals(configManager().getValue("ldap.type"))) {
+		log.info("Using embedded LDAP server");
+		LdapContextSource lcs = new LdapContextSource();
+		lcs.setUrl("ldap://localhost:33389/");
+		lcs.setBase(configManager().getValue("ldap.base"));
+		try {
+			lcs.afterPropertiesSet();
+		} catch (Exception e) {
+			log.info(e);
+		}
+		
+		return lcs;
+	}
+	// if configuration == external
+	log.info("Using external LDAP server");
+	LdapContextSource lcs = new LdapContextSource();
+	lcs.setUrl(configManager().getValue("ldap.url"));
+	lcs.setBase(configManager().getValue("ldap.base"));
+		try {
+			lcs.afterPropertiesSet();
+		} catch (Exception e) {
+			log.info(e);
+		}
+		 
+	return lcs;
+    }
+
+    @Bean
+    public LdapTemplate ldapTemplate() {
+	LdapTemplate lt = new LdapTemplate(ldapContextSource());
+	return lt;
+    }
+
 
     @Bean
     public PlatformTransactionManager transactionManager() {

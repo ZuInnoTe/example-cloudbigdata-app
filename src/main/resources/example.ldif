@@ -1,3 +1,6 @@
+# this is just a simple example - do not use it for production purposes
+# passwords should be encrypted using bcrypt or using a salted hash function, such as SSHA-512 on the server
+
 version: 1
 
 dn: dc=example,dc=com
@@ -30,10 +33,13 @@ objectClass: top
 objectClass: inetOrgPerson
 objectClass: person
 objectClass: organizationalPerson
+firstName: Martha
+lastName: Musterfrau
 cn: Martha Musterfrau
 sn: Martha
 uid: marthamusterfrau
 userPassword: {sha}W6ph5Mm5Pz8GgiULbPgzG37mj9g=
+
 
 dn: uid=johndoe,ou=users,o=companyexample,dc=example,dc=com
 objectClass: top
@@ -42,14 +48,19 @@ objectClass: person
 objectClass: organizationalPerson
 cn: John Doe
 sn: John
+firstName: John
+lastName: Doe
 uid: johndoe
 userPassword: {sha}W6ph5Mm5Pz8GgiULbPgzG37mj9g=
+
 
 dn: uid=foobar,ou=users,o=companyexample,dc=example,dc=com
 objectClass: top
 objectClass: inetOrgPerson
 objectClass: person
 objectClass: organizationalPerson
+firstName: Foo
+lastName: Bar
 cn: Foo Bar
 sn: Foo
 uid: foobar

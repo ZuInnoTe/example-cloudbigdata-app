@@ -23,7 +23,11 @@
 
 package org.zuinnote.cloudbigdata.config;
 
+import org.apache.log4j.Logger;
+
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.ConfigurableApplicationContext;
+import  org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -31,11 +35,24 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.openid.OpenIDAttribute;
 import org.springframework.http.HttpMethod;
 
-import  org.zuinnote.cloudbigdata.security.OpenIDLDAPUserDetailsService;
+import org.springframework.ldap.core.support.LdapContextSource;
+
+import org.zuinnote.cloudbigdata.configmanager.ConfigManagerInterface;
+import  org.zuinnote.cloudbigdata.usermanager.OpenIDUserDetailsService;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+@Autowired
+private ConfigManagerInterface configManager;
+@Autowired
+private LdapContextSource ldapContextSource;
+@Autowired 
+private ConfigurableApplicationContext appContext;
+private static Logger log = Logger.getLogger(WebSecurityConfig.class.getName());
+
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
@@ -73,19 +90,26 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	         .loginProcessingUrl("/cloudbigdata/loginopenid")
 		 .failureUrl("/cloudbigdata/loginerror")
                  .permitAll()
-		 .authenticationUserDetailsService(new OpenIDLDAPUserDetailsService());
+		 .authenticationUserDetailsService(appContext.getBean(OpenIDUserDetailsService.class));
 
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder authManagerBuilder) throws Exception {
-	// check ldap
-		authManagerBuilder
-			.ldapAuthentication()
-				.userDnPatterns("uid={0},ou=users,o=companyexample")
-				.groupSearchBase("ou=exampleapp,o=companyexample")
-				.contextSource()
-					.ldif("classpath:example.ldif").root("dc=example,dc=com");
+	// check ldap - only ldap users and not openid users, because there information is stored in ldap only for completeness
+		if (new String("embedded").equals(configManager.getValue("ldap.type"))) {
+			authManagerBuilder
+				.ldapAuthentication()
+					.userDnPatterns(configManager.getValue("ldap.userDnPatterns"))
+					.groupSearchBase(configManager.getValue("ldap.groupSearchBase"))
+					.contextSource().ldif("classpath:example.ldif").root(configManager.getValue("ldap.base"));
+		} else {
+			authManagerBuilder
+				.ldapAuthentication()
+					.userDnPatterns(configManager.getValue("ldap.userDnPatterns"))
+					.groupSearchBase(configManager.getValue("ldap.groupSearchBase"))
+					.contextSource(ldapContextSource);
+		}
    		
  }
 }
