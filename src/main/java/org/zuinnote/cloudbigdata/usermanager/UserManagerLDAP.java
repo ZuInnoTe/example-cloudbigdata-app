@@ -113,14 +113,22 @@ public class UserManagerLDAP implements UserManagerInterface {
 				if (theCtx.attributeExists("cn")) {
 		 			currentGroupName=theCtx.getStringAttribute("cn");
 				}
-				return currentGroupName;
+				if (theCtx.getDn().toString().contains(configManager.getValue("ldap.groupSearchBase"))) {
+					// consider only groups for this app
+					return currentGroupName;
+	
+				}
+				return null;
 				
             		}
                 });
 		HashSet<String> resultSet = new HashSet();
 		Iterator resultListIterator = foundGroupList.iterator();
 		while (resultListIterator.hasNext()) {
-			resultSet.add((String)resultListIterator.next());
+			Object currentItem =resultListIterator.next();
+			if (currentItem!=null) {
+				resultSet.add((String)currentItem);
+			}
 		}
 		return resultSet;
 	}

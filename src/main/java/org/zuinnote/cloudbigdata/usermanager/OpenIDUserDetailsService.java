@@ -35,7 +35,6 @@ import java.util.Collection;
 import org.apache.log4j.Logger;
 
 
-
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.openid.OpenIDAuthenticationToken;
