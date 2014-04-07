@@ -28,16 +28,16 @@ repositories {
 
 dependencies {
     // spring boot
-    compile("org.springframework.boot:spring-boot-starter-web:1.0.0.RC1")
+    compile("org.springframework.boot:spring-boot-starter-web:1.0.1.RELEASE")
     // spring security
-    compile("org.springframework.boot:spring-boot-starter-security:1.0.0.RC1")
+    compile("org.springframework.boot:spring-boot-starter-security:1.0.1.RELEASE")
     compile("org.springframework.security:spring-security-openid:3.2.0.RELEASE")
     // ldap
     compile("org.springframework.security:spring-security-ldap:3.2.0.RELEASE")
     compile("org.apache.directory.server:apacheds-server-jndi:1.5.5")
     // spring web socket + messaging
-    compile("org.springframework.boot:spring-boot-starter-websocket:1.0.0.RC1")
-    compile("org.springframework:spring-messaging:4.0.1.RELEASE")
+    compile("org.springframework.boot:spring-boot-starter-websocket:1.0.1.RELEASE")
+    compile("org.springframework:spring-messaging:4.0.3.RELEASE")
     // spring jpa data
     compile("org.springframework.data:spring-data-jpa:1.4.2.RELEASE")
     compile("org.hibernate:hibernate-entitymanager:4.2.8.Final")
