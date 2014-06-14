@@ -22,6 +22,8 @@
 **/
 package org.zuinnote.cloudbigdata.websocket;
 
+/* This class describes a simple response message to @HelloMessage using WebSockets / messaging service */
+
 public class HelloResponse {
 
     private String content;

@@ -23,6 +23,12 @@
 package org.zuinnote.cloudbigdata.usermanager;
 import org.apache.log4j.Logger;
 
+/**
+* This factory creates User Managers depending on configuration (e.g. LDAP authentication/authorization)
+*
+*
+*/
+
 public class UserManagerFactory {
 
 	private static Logger log = Logger.getLogger(UserManagerFactory.class.getName());

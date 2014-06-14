@@ -47,10 +47,27 @@ import org.zuinnote.cloudbigdata.jpadata.converter.jdatajson.JTableListActionRes
 
 import javax.servlet.http.HttpServletRequest;
 
+/***
+*
+* This controller provides access to customer objects via JPA to web applications. The objects are translated into JSON/jTable format, so that they can be displayed in a table on a web page.
+* Furthermore standard CRUD (create,read,update,delete) operations for jTable are supported. Finally, a list of customers in JSON/jTable format can be retrieved using the pagination feature.
+*
+*/
+
 @Controller
 public class JPAController {
     private @Autowired ConfigurableApplicationContext appContext;
 
+    /**
+     *
+     * Create a customer using JPA
+     *
+     * @param firstName first name of customer
+     * @param lastName last name of customer
+     * @param lcoation location of customer
+     *
+     * @return created customer in jTable/JSON format or error message in jTable/JSON format
+     */
    @RequestMapping(value="/cloudbigdata/jpa/createcustomer", method=RequestMethod.POST)
     public @ResponseBody JTableCreateActionResponse<Customer> jpaCreateCustomer(@RequestParam(value="firstName", required=true) String firstName, @RequestParam(value="lastName", required=true) String lastName, @RequestParam(value="location", required=true) String location,  Model model) {
 	CustomerRepository repository =appContext.getBean(CustomerRepository.class);
@@ -62,6 +79,17 @@ public class JPAController {
         return resp;
     }
 
+    /**
+     *
+     * Update a customer using JPA
+     *
+     * @param id customer id
+     * @param firstName first name of customer
+     * @param lastName last name of customer
+     * @param lcoation location of customer
+     *
+     * @return updated customer in jTable/JSON format or error message in jTable/JSON format
+     */
    @RequestMapping(value="/cloudbigdata/jpa/updatecustomer", method=RequestMethod.POST)
     public @ResponseBody JTableUpdateActionResponse<Customer> jpaUpdateCustomer(@RequestParam(value="id", required=true) long id, @RequestParam(value="firstName", required=true) String firstName, @RequestParam(value="lastName", required=true) String lastName, @RequestParam(value="location", required=true) String location,  Model model) {
 	CustomerRepository repository =appContext.getBean(CustomerRepository.class);
@@ -77,6 +105,15 @@ public class JPAController {
 	}
         return resp;
     }
+
+    /**
+     *
+     * Delete a customer using JPA
+     *
+     * @param id customer id
+     *
+     * @return success or error message in jTable/JSON format
+     */
 
    @RequestMapping(value="/cloudbigdata/jpa/deletecustomer", method=RequestMethod.POST)
     public @ResponseBody JTableDeleteActionResponse<Customer> jpaDeleteCustomer(@RequestParam(value="id", required=true) long id,  Model model) {
@@ -98,6 +135,16 @@ public class JPAController {
 	
         return resp;
     }
+
+    /**
+     *
+     * List customers using JPA with pagination feature for jTable. Page size is limited to 200
+     *
+     * @param jtStartIndex page number
+     * @param jtPageSize number of elements per page
+     *
+     * @return list of customers in jTable/JSON format or error message
+     */
 
    @RequestMapping(value="/cloudbigdata/jpa/listcustomer", method=RequestMethod.POST)
     public @ResponseBody JTableListActionResponse<Customer>  jpaListCustomer(@RequestParam(value="jtStartIndex", required=true) int jtStartIndex, @RequestParam(value="jtPageSize", required=true) int jtPageSize, Model model) {

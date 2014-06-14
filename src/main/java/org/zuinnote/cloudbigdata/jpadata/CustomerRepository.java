@@ -23,12 +23,18 @@
 
 package org.zuinnote.cloudbigdata.jpadata;
 
+/* Describes the interface to the repository of all customers */
+
 import java.util.List;
 
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.domain.Pageable;
 
 public interface CustomerRepository extends PagingAndSortingRepository<Customer, Long> {
-  
+   /*
+    * find a customer by last name
+    * @parameter lastName : last Name to look for
+    * @return list of customers matching lastName
+   */
     List<Customer> findByLastName(String lastName);
 }

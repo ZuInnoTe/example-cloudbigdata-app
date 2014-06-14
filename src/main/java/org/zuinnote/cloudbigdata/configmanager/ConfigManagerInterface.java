@@ -23,10 +23,28 @@
 
 package org.zuinnote.cloudbigdata.configmanager;
 
+/**
+* Interface for a configuration manager
+*
+*
+*/
+
 public interface ConfigManagerInterface {
 
+	/*
+	* read a value from the configuration
+	*/
+
 	public String getValue(String key);
+
+	/*
+	* watch key for configuration changes and inform object implementing @ConfigChangeInterface
+	*/
 	public boolean watchKey(String key, ConfigChangeInterface objToNotify);
+
+	/*
+	* stop watching key for configuration changes and stop informing object implementing @ConfigChangeInterface
+	*/
 	public void unWatchKey(String key, ConfigChangeInterface objToNotify);	
 	
 }

@@ -25,10 +25,42 @@ package org.zuinnote.cloudbigdata.usermanager;
 
 import java.util.Collection;
 
+/*
+* Basic interface of a user manager
+*
+*
+*/
+
 public interface UserManagerInterface {
 
+	/*
+	* Create a user
+	* 
+	* @param theUser user details
+	*
+	* @return User with details if successful, null if not
+	*/
+
 	public User createUser(User theUser);
+
+	/*
+	* Find a user matching criteria
+	* 
+	* @param theUser user details
+	*
+	* @return User with details if successful, null if not
+	*/
+
+
 	public User findUser(User theUser);
+
+	/*
+	* Retrieve group membership of a user
+	* 
+	* @param theUser user details
+	*
+	* @return a collection of groups the user is member of
+	*/
 	public Collection<String> getUserGroupMemberShip(User theUser);
 
 }

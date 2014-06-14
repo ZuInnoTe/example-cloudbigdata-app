@@ -22,7 +22,7 @@
 **/
 
 /**
-* Class for formatting JSON repsonses to a JTable
+* Class for formatting JSON repsonses to a JTable (Delete Action)
 *
 *
 *

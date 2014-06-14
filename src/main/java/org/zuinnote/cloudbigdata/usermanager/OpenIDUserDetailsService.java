@@ -44,7 +44,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import org.zuinnote.cloudbigdata.configmanager.ConfigManagerInterface;
 
-
+/* 
+* This class implements a Custom Authentication Service for OpenID 
+* Successfully authenticated openID users are added to the LDAP directory so we can assign them further authorization roles
+*/
 
  public class OpenIDUserDetailsService implements
          AuthenticationUserDetailsService<OpenIDAuthenticationToken> {
@@ -57,10 +60,13 @@ private ConfigManagerInterface configManager;
 @Autowired
 private UserManagerInterface userManager;
 
-     /***
-	** load user details after successful OpenID authentication
-	** add user to usermanager so we can assign further authorization rules (e.g. admin) 
-     **/
+     	/*
+	* load user details after successful OpenID authentication
+	* add user to usermanager so we can assign further authorization roles (e.g. admin) 
+        *
+	* @param token OpenID AuthenticationToken of user
+	* @return User and assigned authorization roles 
+     	*/
      public UserDetails loadUserDetails(OpenIDAuthenticationToken token) throws UsernameNotFoundException {
 	// check if user already exists 
 	org.zuinnote.cloudbigdata.usermanager.User foundUser = userManager.findUser(new org.zuinnote.cloudbigdata.usermanager.User(token.getName(),configManager.getValue("ldap.openIDUsers"),"",""));

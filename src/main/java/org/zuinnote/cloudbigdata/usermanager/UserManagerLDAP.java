@@ -23,6 +23,11 @@
 
 package org.zuinnote.cloudbigdata.usermanager;
 
+/*
+* This class implements a user manager leveraging and existing LDAP service. It is created via @UserManagerFactory
+*
+*/
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -54,6 +59,13 @@ public class UserManagerLDAP implements UserManagerInterface {
 	@Autowired
 	private LdapTemplate ldapTemplate;
 
+	/*
+	* Creates a user in the LDAP 
+	*
+	* @param theUser User including details
+	*
+	* @return created user
+	*/
 	public User createUser(User theUser) {
 		String cleanedUserID= cleanUserID(theUser.getUserID());
       		Attributes attr = new BasicAttributes();
@@ -71,6 +83,13 @@ public class UserManagerLDAP implements UserManagerInterface {
 		return new User(cleanedUserID, theUser.getType(), theUser.getFirstName(), theUser.getLastName());
 	}
 	
+	/*
+	* Find a user in the LDAP 
+	*
+	* @param theUser User
+	*
+	* @return created user
+	*/
 	public User findUser(User theUser) {
 		
 		List foundUserList=ldapTemplate.search(
@@ -102,7 +121,13 @@ public class UserManagerLDAP implements UserManagerInterface {
 		return null; 
 	}
 
-	
+	/*
+	* Retrieves group membership of a user
+	*
+	* @param theUser User
+	*
+	* @return HashSet with groups the user is member of
+	*/
 	public Collection<String> getUserGroupMemberShip(User theUser) {
 	List foundGroupList=ldapTemplate.search(
         	"","uniqueMember=uid="+cleanUserID(theUser.getUserID())+","+theUser.getType()+","+configManager.getValue("ldap.base"),new ContextMapper() {
@@ -133,7 +158,13 @@ public class UserManagerLDAP implements UserManagerInterface {
 		return resultSet;
 	}
 
-
+	/*
+	* Clean user id so that it can be stored in LDAP 
+	*
+	* @param userID user identifier to store into LDAP
+	*
+	* @return sanitized user indentifier
+	*/
 	private String cleanUserID(String userID) {
 		return userID.replaceAll("[^a-zA-Z0-9]+","");
 	}

@@ -23,6 +23,12 @@
 
 package org.zuinnote.cloudbigdata.usermanager;
 
+/*
+* This class describes a user
+*
+*
+*/
+
 public class User {
 
 private String userID;

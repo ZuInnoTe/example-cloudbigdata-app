@@ -22,7 +22,7 @@
 **/
 
 /**
-* Provides basic methods for configuration management
+* Abstract class representing a configuration manager. It contains already some basic methods to support thread-safeness. Concrete implementations can read / write configuration from various sources (e.g. file, ZooKeeper, Websockets etc.) without the application noting any difference.
 *
 *
 */
@@ -48,12 +48,21 @@ private static Map<String,String> configValues;
 private static Map<String, List<ConfigChangeInterface>> watcherMap;
 	
 	public AbstractConfigManager() {
+		// configure locking for thread-safeness
 		this.lock=new ReentrantLock();
 		// config values for application
 		configValues = new HashMap<String,String>();
 		// set up watchers for configValues
 		watcherMap = Collections.synchronizedMap(new HashMap<String, List<ConfigChangeInterface>>());
 	}
+
+	/**
+	* Read a value from the configuration given a key
+	*
+	* @param key Key of the value you are looking for
+	* 
+	* @return value as a String, it is an empty string if not found.
+	*/
 
 	public String getValue(String key) {
 		// if in process of a reconfiguration we have to wait
@@ -67,41 +76,12 @@ private static Map<String, List<ConfigChangeInterface>> watcherMap;
 		return result;
 	}
 
-	public boolean watchKey(String key, ConfigChangeInterface objToNotify) {
-		// if in process of a reconfiguration we have to wait
- 		lock.lock();  // block until potential reconfiguration has finished
-     		try {
-			if (configValues.containsKey(key)==false)  return false;
-			// key is in configValues so we can add a watcher
-			synchronized(watcherMap) {
-				List<ConfigChangeInterface> keyList= watcherMap.get(key);
-				// check if watcherList for key already exists
-				if (keyList==null) {
-					keyList = new ArrayList<ConfigChangeInterface>();
-					watcherMap.put(key, keyList);
-			}
-			// check if watcher already exists
-			if (keyList.contains(objToNotify)==false) {
-				keyList.add(objToNotify);
-			}
-		}
-		} finally {
-       			lock.unlock();
-     		}
-		return true;
-	}
-
-	public void unWatchKey(String key, ConfigChangeInterface objToNotify) {
-		synchronized(watcherMap) {
-			List<ConfigChangeInterface> keyList= watcherMap.get(key);
-			// check if watcherList for key already exists
-			if (keyList!=null) {
-				keyList.remove(objToNotify);
-			}
-			if (keyList.size()==0) watcherMap.remove(key);
-		}
-	}
-
+	/**
+	* Write a value to the configuration given a key
+	*
+	* @param key Key of the value you want to change
+	* 
+	*/
 	protected void setValue(String key, String value) {
 		// if in process of a reconfiguration we have to wait
  		lock.lock();  // block until potential reconfiguration has finished
@@ -131,10 +111,72 @@ private static Map<String, List<ConfigChangeInterface>> watcherMap;
      		}
 	}
 
+	/**
+	* Start monitoring changes of configuration value given a  key
+	*
+	* @param key Key of the value you are looking for
+	* @objToNotify Object that is notified about changes
+	* 
+	* @return value as a String, it is an empty string if not found.
+	*/
+
+	public boolean watchKey(String key, ConfigChangeInterface objToNotify) {
+		// if in process of a reconfiguration we have to wait
+ 		lock.lock();  // block until potential reconfiguration has finished
+     		try {
+			if (configValues.containsKey(key)==false)  return false;
+			// key is in configValues so we can add a watcher
+			synchronized(watcherMap) {
+				List<ConfigChangeInterface> keyList= watcherMap.get(key);
+				// check if watcherList for key already exists
+				if (keyList==null) {
+					keyList = new ArrayList<ConfigChangeInterface>();
+					watcherMap.put(key, keyList);
+			}
+			// check if watcher already exists
+			if (keyList.contains(objToNotify)==false) {
+				keyList.add(objToNotify);
+			}
+		}
+		} finally {
+       			lock.unlock();
+     		}
+		return true;
+	}
+
+	/**
+	* Stop monitoring changes of configuration value given a  key
+	*
+	* @param key Key of the value you are looking for
+	* @objToNotify Object that is notified about changes
+	* 
+	* @return value as a String, it is an empty string if not found.
+	*/
+	public void unWatchKey(String key, ConfigChangeInterface objToNotify) {
+		synchronized(watcherMap) {
+			List<ConfigChangeInterface> keyList= watcherMap.get(key);
+			// check if watcherList for key already exists
+			if (keyList!=null) {
+				keyList.remove(objToNotify);
+			}
+			if (keyList.size()==0) watcherMap.remove(key);
+		}
+	}
+
+	/**
+	* Lock configuration  
+	*
+	*/
+
 	protected void getConfigurationLock() {
 		lock.lock();
 	}
 
+
+	/**
+	* Unlock configuration  
+	*
+	*/
 	protected void releaseConfigurationLock() {
 		lock.unlock();
 	}

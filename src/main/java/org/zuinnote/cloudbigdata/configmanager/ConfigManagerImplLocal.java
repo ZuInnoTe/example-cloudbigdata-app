@@ -30,6 +30,13 @@ import org.apache.log4j.Logger;
 import java.util.Iterator;
 import java.util.Properties;
 
+/**
+*
+* Implements a file based configuration manager (@see AbstractConfigManager)
+*
+*
+*/
+
 public class ConfigManagerImplLocal extends AbstractConfigManager {
 	private static Logger log = Logger.getLogger(ConfigManagerImplLocal.class.getName());
 	// get local properties from file

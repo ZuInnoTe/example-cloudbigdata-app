@@ -23,6 +23,11 @@
 
 package org.zuinnote.cloudbigdata.jpadata;
 
+/**
+* Implements a simple Customer Entity using JPA
+*
+*/
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;

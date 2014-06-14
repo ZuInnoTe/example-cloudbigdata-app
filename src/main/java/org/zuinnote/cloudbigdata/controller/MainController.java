@@ -39,9 +39,17 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 import javax.servlet.http.HttpServletRequest;
 
+/***
+*
+* This controller provides access to dynamic web pages of the web application leveraging the template engine
+*
+*/
+
+
 @Controller
 public class MainController {
     private @Autowired ConfigurableApplicationContext appContext;
+
 
     @RequestMapping("/cloudbigdata/main")
     public String main(@RequestParam(value="name", required=false, defaultValue="World") String name, Model model) {

@@ -27,6 +27,13 @@ import org.apache.log4j.Logger;
 
 import java.util.Properties;
 
+/**
+*
+* Implements a ZooKeeper based configuration manager (@see AbstractConfigManager)
+*
+*
+*/
+
 public class ConfigManagerImplZooKeeper extends AbstractConfigManager {
 	private static Logger log = Logger.getLogger(ConfigManagerImplZooKeeper.class.getName());
 

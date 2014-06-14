@@ -27,6 +27,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
+/* This controller implements a simple websocket interface to the web application. All messages are send to messaging service so that they can be dealt with asynchronously in the background */
 
 @Controller
 public class WebSocketController {

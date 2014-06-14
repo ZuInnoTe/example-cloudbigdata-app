@@ -100,16 +100,20 @@ private static Logger log = Logger.getLogger(Application.class.getName());
 	return ConfigManagerFactory.getConfigManager();
     }
 
+
+   /** Custom User Detail Service for users authenticating using OpenID */
     @Bean
     public OpenIDUserDetailsService openIDUserDetailsService() {
 	return new OpenIDUserDetailsService();
     }
 
+    /* User Manager */
     @Bean
     public UserManagerInterface userManager() {
 	return UserManagerFactory.getUserManager();
     }
 
+    /* LDAP configuration */
     @Bean
     public LdapContextSource ldapContextSource() {
 	// if configuration == embedded, use default shipped ldif
@@ -140,18 +144,20 @@ private static Logger log = Logger.getLogger(Application.class.getName());
 	return lcs;
     }
 
+    /* LDAP template that can be used throughout the application to access LDAP */
     @Bean
     public LdapTemplate ldapTemplate() {
 	LdapTemplate lt = new LdapTemplate(ldapContextSource());
 	return lt;
     }
 
-
+   /* Transaction manager for JPA */
     @Bean
     public PlatformTransactionManager transactionManager() {
         return new JpaTransactionManager();
     }
 
+    /* Configure JPA */
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource, JpaVendorAdapter jpaVendorAdapter) {
         LocalContainerEntityManagerFactoryBean lef = new LocalContainerEntityManagerFactoryBean();
@@ -161,6 +167,7 @@ private static Logger log = Logger.getLogger(Application.class.getName());
         return lef;
     }
 
+    /* Configure Data Source for JPA */
     @Bean
     public JpaVendorAdapter jpaVendorAdapter() {
         HibernateJpaVendorAdapter hibernateJpaVendorAdapter = new HibernateJpaVendorAdapter();

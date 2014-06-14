@@ -44,6 +44,10 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 @Autowired
 private ConfigManagerInterface configManager;
 
+	/**
+	* Configure a message broker for web socket message, so we can interact more loosely coupled with the backend
+	*
+	*/
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry config) {
 		config.enableSimpleBroker("/topic");
