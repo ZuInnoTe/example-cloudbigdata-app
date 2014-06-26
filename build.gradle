@@ -4,7 +4,7 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.0.2.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.1.2.RELEASE")
     }
 }
 
@@ -34,15 +34,15 @@ repositories {
 
 dependencies {
     // spring boot
-    compile("org.springframework.boot:spring-boot-starter-web:1.0.2.RELEASE")
+    compile("org.springframework.boot:spring-boot-starter-web:1.1.2.RELEASE")
     // spring security
-    compile("org.springframework.boot:spring-boot-starter-security:1.0.2.RELEASE")
+    compile("org.springframework.boot:spring-boot-starter-security:1.1.2.RELEASE")
     compile("org.springframework.security:spring-security-openid:3.2.0.RELEASE")
     // ldap
     compile("org.springframework.security:spring-security-ldap:3.2.0.RELEASE")
     compile("org.apache.directory.server:apacheds-server-jndi:1.5.5")
     // spring web socket + messaging
-    compile("org.springframework.boot:spring-boot-starter-websocket:1.0.2.RELEASE")
+    compile("org.springframework.boot:spring-boot-starter-websocket:1.1.2.RELEASE")
     compile("org.springframework:spring-messaging:4.0.3.RELEASE")
     // spring jpa data
     compile("org.springframework.data:spring-data-jpa:1.4.2.RELEASE")
