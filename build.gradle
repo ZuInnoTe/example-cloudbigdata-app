@@ -4,7 +4,7 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.1.2.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.0.RELEASE")
     }
 }
 
@@ -34,29 +34,29 @@ repositories {
 
 dependencies {
     // spring boot
-    compile("org.springframework.boot:spring-boot-starter-web:1.1.2.RELEASE")
+    compile("org.springframework.boot:spring-boot-starter-web:1.2.0.RELEASE")
     // spring security
-    compile("org.springframework.boot:spring-boot-starter-security:1.1.2.RELEASE")
-    compile("org.springframework.security:spring-security-openid:3.2.0.RELEASE")
+    compile("org.springframework.boot:spring-boot-starter-security:1.2.0.RELEASE")
+    compile("org.springframework.security:spring-security-openid:3.2.5.RELEASE")
     // ldap
-    compile("org.springframework.security:spring-security-ldap:3.2.0.RELEASE")
+    compile("org.springframework.security:spring-security-ldap:3.2.5.RELEASE")
     compile("org.apache.directory.server:apacheds-server-jndi:1.5.5")
     // spring web socket + messaging
-    compile("org.springframework.boot:spring-boot-starter-websocket:1.1.2.RELEASE")
-    compile("org.springframework:spring-messaging:4.0.3.RELEASE")
+    compile("org.springframework.boot:spring-boot-starter-websocket:1.2.0.RELEASE")
+    compile("org.springframework:spring-messaging:4.1.3.RELEASE")
     // spring jpa data
-    compile("org.springframework.data:spring-data-jpa:1.4.2.RELEASE")
-    compile("org.hibernate:hibernate-entitymanager:4.2.8.Final")
-    compile("com.h2database:h2:1.3.174") 
+    compile("org.springframework.data:spring-data-jpa:1.7.1.RELEASE")
+    compile("org.hibernate:hibernate-entitymanager:4.3.7.Final")
+    compile("com.h2database:h2:1.4.182") 
     // convert java object to javascript
     compile("com.fasterxml.jackson.core:jackson-databind")
     // zookeeper distributed configuration 
-    compile("org.apache.zookeeper:zookeeper:3.4.5") {
+    compile("org.apache.zookeeper:zookeeper:3.4.6") {
 	exclude group: 'org.slf4j'
 	exclude group: 'log4j'
     }
     // thymeleaf
-    compile("org.thymeleaf:thymeleaf-spring4:2.1.2.RELEASE")
+    compile("org.thymeleaf:thymeleaf-spring4:2.1.3.RELEASE")
     // testing
     testCompile("junit:junit:4.11")
 }
