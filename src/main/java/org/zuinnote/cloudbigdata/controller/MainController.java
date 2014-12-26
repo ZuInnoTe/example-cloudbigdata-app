@@ -52,8 +52,9 @@ public class MainController {
 
 
     @RequestMapping("/cloudbigdata/main")
-    public String main(@RequestParam(value="name", required=false, defaultValue="World") String name, Model model) {
+    public String main(HttpServletRequest request, @RequestParam(value="name", required=false, defaultValue="World") String name, Model model) {
         model.addAttribute("name", name);
+	model.addAttribute("principalname", request.getUserPrincipal().getName());
         return "main";
     }
 
@@ -82,8 +83,14 @@ public class MainController {
 
 
    @RequestMapping("/cloudbigdata/websocket")
-    public String websocket(Model model) {
+    public String websocket(Model model) {	
         return "websocket";
+    }
+
+
+   @RequestMapping("/cloudbigdata/webrtc")
+    public String webrtc(Model model) {
+        return "webrtc";
     }
 
     @RequestMapping("/cloudbigdata/logoutsuccess")

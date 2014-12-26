@@ -1,0 +1,19 @@
+{
+  "name": "zuinnote-example-cloudbigdata-app",
+  "version": "1.0.0",
+  "source": "UNKNOWN",
+  "author": "Jörn Franke"
+  "license": "MIT",
+  "summary": "Deploys an exemplarly cloud big data app",
+  "description": "ZuInnoTe Example Cloud Big Data App",
+  "project_page": "https://www.github.com/zuinnote",
+  "dependencies": [
+
+  ],
+  "types": [
+
+  ],
+  "checksums": {
+
+  }
+}

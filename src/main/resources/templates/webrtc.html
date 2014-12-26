@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hello WebRTC</title>
+    <link href="/cloudbigdata/css/simplelayout.css" type="text/css" rel="stylesheet" />
+    <style>
+	.classoutgoingvideo {
+		width: 200px;
+		height: 200px;
+	}
+	.classincomingvideo {
+		width: 400px;
+		height: 400px;
+	}
+    </style>
+    <script src="/cloudbigdata/js/websocket/sockjs-0.3.4.js"></script>
+    <script src="/cloudbigdata/js/websocket/stomp.js"></script>
+    <script src="/cloudbigdata/js/jquery-2.0.3.min.js"></script>
+    <script src="/cloudbigdata/js/webrtc/adapter.js"></script>
+    <script src="/cloudbigdata/js/webrtc/webrtc.js"></script>
+    <script type="text/javascript">
+	 // <![CDATA[
+	var example_webrtc_config = {
+		ownUserId: null, /** set after successful web socket connect **/
+		room: 'demoroom', /** room **/
+		enable_videovoicechat: true, /** enable video/voice chat functionality of webrtc **/
+		enable_datachannel: true, /** enable data channel of webrtc **/
+		datachannel_name: 'demochannel', /** name of the data channel, if enabled **/
+		datachannel_options:  null, /** options for data channel, if enabled **/
+		pc_config : {"iceServers": [{"url": "stun:stun.l.google.com:19302"}]}, /* webrtc configuration stun/turn server */
+		pc_constraints: { optional: [ {RtpDataChannels: true}]}, /* web rtc connection constraints */
+		receiveConstraints : {'mandatory': {'OfferToReceiveAudio': true, 'OfferToReceiveVideo': true },'optional': [{ 'VoiceActivityDetection': false}]}, /* webrtc voice/video chat parameter **/
+		user_media : { "audio": true, "video": true }, /* media to request from user */
+		video_outgoing: "#localvideos", /*  (own video of the user) is placed within element(s) according to jquery selector */
+		video_incoming: "#remotevideos", /*  (videos of chat partners) is placed within element(s) according to jquery selector */
+		class_outgoing : "classoutgoingvideo", /*  CSS class of the own video of the user (useful for borders etc.) */
+		class_incoming : "classincomingvideo", /*  CSS class of the videos of the other users (useful for borders etc.) */
+		sendsignalingmessage_handler: func_webrtc_sendsignalingmessagehandler, /** handler for sending a signaling message to other users function(signalingmessage) */
+		receivedata_handler: func_webrtc_receivedatahandler, /* receive data handler function(message) */
+		error_handler: func_webrtc_errorhandler, /* error handling function (errorcode, errormessage, peerid) */
+		status_handler: func_webrtc_statushandler /* status handling function (statuscode, statusmessage, peerid) */
+	};
+
+        var stompClient = null;
+	var webrtcClient= null;
+	
+	function setConnected() {
+	    document.getElementById('joinbutton').disabled = true;
+            document.getElementById('leavebutton').disabled = false;
+            document.getElementById('datachanneldialog').style.display = 'none';
+ 	    document.getElementById('videodialog').style.display = 'block';
+	}
+
+	function setDataChannelEnabled() {
+		document.getElementById('receivedPeerMessages').value = '';
+            	document.getElementById('datachanneldialog').style.display = 'block';
+	}
+
+	function setDataChannelDisabled() {
+		document.getElementById('receivedPeerMessages').value = '';
+            	document.getElementById('datachanneldialog').style.display = 'none';
+	}
+	
+	function setDisconnected() {
+	    document.getElementById('joinbutton').disabled = false;
+            document.getElementById('leavebutton').disabled = true;
+            document.getElementById('datachanneldialog').style.display = 'none';
+	    document.getElementById('videodialog').style.display = 'none';
+	}
+
+        function connect() {
+            var socket = new SockJS('/cloudbigdata/wswebrtc');
+            stompClient = Stomp.over(socket);
+            stompClient.connect('', '', function(frame) {
+                console.log('Connected: ' + frame);
+		example_webrtc_config.ownUserId=frame.headers['user-name'];
+		console.log("Initializing WebRTC for user: "+example_webrtc_config.ownUserId);
+		setConnected();
+		// send join message to all users
+                stompClient.send("/app/cloudbigdata/wswebrtc", {}, JSON.stringify({ 'message': {none:''},type:'JOIN',fromUserID:'',toUserID:'',room:example_webrtc_config.room }));
+		// subscribe to webrtc conversions in room "demogroup"
+                stompClient.subscribe('/topic/webrtc', function(frame){
+			console.log("Received message for all users");
+			console.log(frame);
+			
+			var signalingmessage=JSON.parse(frame.body);
+			// check joins from other users and try to call them
+			if ((frame.command=='MESSAGE') && (signalingmessage['fromUserID']!=example_webrtc_config.ownUserId) && (signalingmessage['type']=='JOIN')) {
+				// if equals 'JOIN' send  offer call to other users
+				console.log('User "'+signalingmessage['fromUserID']+'" joined chatroom "'+signalingmessage['room']+'". Trying to establish video/voice chat.... ');
+				webrtcClient.callChat(signalingmessage['fromUserID']);		
+			}
+		
+                });
+		// subscribe to private signaling messages from other users
+                stompClient.subscribe('/user/queue/webrtc', function(frame){
+			console.log("Received private message");
+			console.log(frame);
+			if (frame.command=='MESSAGE') {
+				var signalingmessage=JSON.parse(frame.body);
+				if (signalingmessage['type']=='CALL') {
+					console.log('User "'+signalingmessage['fromUserID']+'" calls... Accepting call...');
+					console.log(signalingmessage);
+					webrtcClient.answerchat(signalingmessage);
+				} else if (signalingmessage['type']=='ANSWER') {
+					console.log('User "'+signalingmessage['fromUserID']+'" answered call...');
+					console.log(signalingmessage),
+					webrtcClient.processSignalingMessage(signalingmessage);
+				} else if (signalingmessage['type']=='SIGNALING') {
+					console.log('Received signaling message from user "'+signalingmessage['fromUserID']+'". Processing it...');
+					console.log(signalingmessage),
+					webrtcClient.processSignalingMessage(signalingmessage);
+				} else {
+					alert('Unknown signalingmessage');
+				}
+			}
+                });
+            });
+        }
+
+	function sendWebRTCDataChannelAll() {
+		for (var prop in webrtcClient.peers) {
+  			if (webrtcClient.peers.hasOwnProperty(prop)) { 
+   			 	webrtcClient.sendDataChannel(webrtcClient.peers[prop].userid,document.getElementById('peerMessage').value);
+  			}
+		}
+		document.getElementById('peerMessage').value=''
+	}
+
+
+	function disableWebRTCDataChannel() {
+		datachannelenabled=false;
+		// disable data channel with all current peers
+			for (var prop in webrtcClient.peers) {
+			if (webrtcClient.peers.hasOwnProperty(prop)) { 
+				if (webrtcClient.peers[prop].connected==true) {
+   			 		webrtcClient.disableDataChannel(webrtcClient.peers[prop].userid);
+				}
+  			}
+		}
+		// make it disabled
+		setDataChannelDisabled();
+	}
+	
+	function disconnect() {
+		setDisconnected();
+		// hang up all webrtc peers
+		for (var prop in webrtcClient.peers) {
+  			if (webrtcClient.peers.hasOwnProperty(prop)) { 
+   			 	webrtcClient.closeChat(webrtcClient.peers[prop].userid);
+  			}
+		}
+		// disable user media
+		webrtcClient.disableUserMedia();
+		// disconnect from websocket
+		stompClient.disconnect();
+	}
+     
+
+ 	
+	/** Peer Connection Data Handler **/
+	function func_webrtc_receivedatahandler(message) {
+		setDataChannelEnabled(); // as soon as we receive something we can assume the data channel has been enabled
+		console.log('Received data channel message from user "'+message['fromUserID']+'"\n '+message['body']);
+		document.getElementById('receivedPeerMessages').value=document.getElementById('receivedPeerMessages').value+'\n'+message['fromUserID']+': '+message['body'];
+	}
+	
+	/** Send signaling message via signaling channel **/
+	function func_webrtc_sendsignalingmessagehandler(signalingmessage) {
+		console.log('Sending signaling message to User "'+signalingmessage['toUserID']+'"...');
+		console.log(JSON.stringify(signalingmessage));
+		stompClient.send("/app/cloudbigdata/wswebrtc", {},JSON.stringify(signalingmessage));
+	}
+
+	/** Error Handler for WebRTC **/
+	function func_webrtc_errorhandler(errorcode, errormessage,peerid) {
+		if (peerid==null) {
+			alert('WebRTC Error (Code: '+errorcode+'): '+errormessage);
+		} else {
+			alert('WebRTC Error with peer "'+peerid+'" (Code: '+errorcode+'): '+errormessage);
+		}
+	}
+
+	/** Status Handler for WebRTC **/
+	function func_webrtc_statushandler(statuscode, statusmessage,peerid) {
+		if (peerid==null) {
+			console.log("WebRTC Status (Code: "+statuscode+"): "+statusmessage);
+		} else {
+			console.log('WebRTC Status with peer "'+peerid+'" (Code: '+statuscode+'): '+statusmessage+peerid);
+		}
+		if (statuscode==webrtc_status_codes.DATACHANNEL_OPEN) {
+			setDataChannelEnabled();
+		}
+		
+	}
+	
+	function initialize() {
+		webrtcClient = new WebRTC(example_webrtc_config);
+		webrtcClient.enableUserMedia();
+	}
+
+	initialize();
+	
+	 // ]]>
+    </script>
+</head>
+<body>
+<noscript><h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket and WebRTC rely on Javascript being enabled. Please enable
+    Javascript and reload this page!</h2></noscript>
+
+	<div>
+		<div id="header" th:include="header :: header">
+		</div>
+		<div id="menu" th:include="menu :: menu">
+		</div>
+		<div id="content">
+<div>
+    <div>
+        <button id="joinbutton" onclick="connect();">Join Video/Voice Chat</button>
+	 <button id="leavebutton" onclick="disconnect();" disabled="disabled">Leave Video/Voice Chat</button>
+    </div>
+	<div id="datachanneldialog" style="display:none">
+		<div>	<p>
+			<label>Send text to all peers: </label><input type="text" id="peerMessage" />
+        		<button id="sendPeerMessage" onclick="sendWebRTCDataChannelAll();">Send</button>
+			</p>
+		</div>
+		<div>
+			<p>
+			<label>Received text from other peers</label> <br />
+			<textarea id="receivedPeerMessages" rows="5" cols="50">
+			</textarea>
+			</p>
+		</div>
+	</div>
+    	<div id="videodialog" style="display:none">
+	Find here your own video and the video of connected other people.
+    		<div id="localvideos">
+		Your own video<br/>
+    		</div>
+    		<div id="remotevideos">
+		Videos of connected people<br />
+    		</div>	
+    	</div>
+</div>		</div>
+		<div id="footer" th:include="footer :: footer">
+		</div>
+</div>
+
+</body>
+</html>
