@@ -34,7 +34,7 @@ public class WebRTCSignalingMessage {
     private String type; /** Used in the Java-Script application **/
     private String fromUserID; /** should be always filled with the correct principal **/
     private String toUserID; /** mandatory only for signaling messages **/
-    private String room; /** chat room **/
+   
 
     public Map<String, Object> getMessage() {
         return message;
@@ -56,8 +56,5 @@ public class WebRTCSignalingMessage {
 	return toUserID;
    }
 
-   public String getRoom() {
-	return room;
-   }
 
 }

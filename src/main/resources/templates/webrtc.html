@@ -77,8 +77,8 @@
 		console.log("Initializing WebRTC for user: "+example_webrtc_config.ownUserId);
 		setConnected();
 		// send join message to all users
-                stompClient.send("/app/cloudbigdata/wswebrtc", {}, JSON.stringify({ 'message': {none:''},type:'JOIN',fromUserID:'',toUserID:'',room:example_webrtc_config.room }));
-		// subscribe to webrtc conversions in room "demogroup"
+		sendStompMessage({ 'message': {none:''},type:'JOIN',fromUserID:'',toUserID:''});
+		// subscribe to webrtc conversions in room "demogroup", i.e. to all messages to the topic with room=demogroup
                 stompClient.subscribe('/topic/webrtc', function(frame){
 			console.log("Received message for all users");
 			console.log(frame);
@@ -87,11 +87,11 @@
 			// check joins from other users and try to call them
 			if ((frame.command=='MESSAGE') && (signalingmessage['fromUserID']!=example_webrtc_config.ownUserId) && (signalingmessage['type']=='JOIN')) {
 				// if equals 'JOIN' send  offer call to other users
-				console.log('User "'+signalingmessage['fromUserID']+'" joined chatroom "'+signalingmessage['room']+'". Trying to establish video/voice chat.... ');
+				console.log('User "'+signalingmessage['fromUserID']+'" joined chatroom "'+example_webrtc_config.room+'". Trying to establish video/voice chat.... ');
 				webrtcClient.callChat(signalingmessage['fromUserID']);		
 			}
 		
-                });
+                }, { 'selector': example_webrtc_config.room });
 		// subscribe to private signaling messages from other users
                 stompClient.subscribe('/user/queue/webrtc', function(frame){
 			console.log("Received private message");
@@ -155,8 +155,12 @@
 		// disconnect from websocket
 		stompClient.disconnect();
 	}
-     
 
+     	/** sends a message via broker to a topic with certain properties (room name)
+	**/
+	function sendStompMessage(message) {
+		stompClient.send("/app/cloudbigdata/wswebrtc", {'selector':example_webrtc_config.room },JSON.stringify(message));
+	}
  	
 	/** Peer Connection Data Handler **/
 	function func_webrtc_receivedatahandler(message) {
@@ -169,7 +173,7 @@
 	function func_webrtc_sendsignalingmessagehandler(signalingmessage) {
 		console.log('Sending signaling message to User "'+signalingmessage['toUserID']+'"...');
 		console.log(JSON.stringify(signalingmessage));
-		stompClient.send("/app/cloudbigdata/wswebrtc", {},JSON.stringify(signalingmessage));
+		sendStompMessage(signalingmessage);
 	}
 
 	/** Error Handler for WebRTC **/

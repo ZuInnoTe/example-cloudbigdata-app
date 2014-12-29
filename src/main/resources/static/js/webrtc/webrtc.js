@@ -203,7 +203,6 @@ function Peer(userid,webrtcconfig) {
 		var signalingmessage={};
 		signalingmessage['type']=type;
 		signalingmessage['message']=message;
-		signalingmessage['room']=thisPeer.config.room;
 		signalingmessage['toUserID']=thisPeer.userid;
 		signalingmessage['fromUserID']=webrtcconfig.ownUserId;
 		// up to the web site to select the correct channel
