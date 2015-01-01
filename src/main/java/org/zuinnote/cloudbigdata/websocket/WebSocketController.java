@@ -24,12 +24,14 @@
 package org.zuinnote.cloudbigdata.websocket;
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import  org.springframework.beans.factory.annotation.Autowired;
 
 import java.security.Principal;
+import java.util.Map;
 
 /* This controller implements a simple websocket interface to the web application. All messages are send to messaging service so that they can be dealt with asynchronously in the background */
 
@@ -59,15 +61,15 @@ public class WebSocketController {
     @MessageMapping("/cloudbigdata/wswebrtc")
     /** Message will be sent to a message-driven middleware **/
     @SendTo("/topic/webrtc")
-    public void webrtc(Principal p, WebRTCSignalingMessage message) throws Exception {
+    public void webrtc(Principal p, @Headers Map headers, WebRTCSignalingMessage message) throws Exception {
 	/** set the sender on server side so nobody is able to impersonate other users **/
 	message.setFromUserID(p.getName());
 	/** forward it to all users if no destination user is set **/
 	if ("".equals(message.getToUserID())) {
-		messagingTemplate.convertAndSend("/topic/webrtc", message);
+		messagingTemplate.convertAndSend("/topic/webrtc", message, headers);
 	} else {
 		/** forward it to the private queue of the destination user if it is a private signaling message **/
-	 	messagingTemplate.convertAndSendToUser(message.getToUserID(), "/queue/webrtc", message);
+	 	messagingTemplate.convertAndSendToUser(message.getToUserID(), "/queue/webrtc", message, headers);
         }
     }
 
