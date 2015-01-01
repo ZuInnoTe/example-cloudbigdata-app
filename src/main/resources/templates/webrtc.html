@@ -91,7 +91,7 @@
 				webrtcClient.callChat(signalingmessage['fromUserID']);		
 			}
 		
-                }, { 'selector': example_webrtc_config.room });
+                }, { "selector": "room='"+example_webrtc_config.room+"'" });
 		// subscribe to private signaling messages from other users
                 stompClient.subscribe('/user/queue/webrtc', function(frame){
 			console.log("Received private message");
@@ -159,7 +159,7 @@
      	/** sends a message via broker to a topic with certain properties (room name)
 	**/
 	function sendStompMessage(message) {
-		stompClient.send("/app/cloudbigdata/wswebrtc", {'selector':example_webrtc_config.room },JSON.stringify(message));
+		stompClient.send("/app/cloudbigdata/wswebrtc", {"room":example_webrtc_config.room },JSON.stringify(message));
 	}
  	
 	/** Peer Connection Data Handler **/
