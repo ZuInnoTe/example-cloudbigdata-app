@@ -71,7 +71,7 @@
         function connect() {
             var socket = new SockJS('/cloudbigdata/wswebrtc');
             stompClient = Stomp.over(socket);
-            stompClient.connect('', '', function(frame) {
+            stompClient.connect({},function(frame) {
                 console.log('Connected: ' + frame);
 		example_webrtc_config.ownUserId=frame.headers['user-name'];
 		console.log("Initializing WebRTC for user: "+example_webrtc_config.ownUserId);
@@ -79,6 +79,8 @@
 		// send join message to all users
 		sendStompMessage({ 'message': {none:''},type:'JOIN',fromUserID:'',toUserID:''});
 		// subscribe to webrtc conversions in room "demogroup", i.e. to all messages to the topic with room=demogroup
+		// hint: this does not work with spring simple message broker, but only if you attach a full-fledge message broker
+		// simple message broker ignores selectors for subscriptions
                 stompClient.subscribe('/topic/webrtc', function(frame){
 			console.log("Received message for all users");
 			console.log(frame);
@@ -91,7 +93,7 @@
 				webrtcClient.callChat(signalingmessage['fromUserID']);		
 			}
 		
-                }, { "selector": "room='"+example_webrtc_config.room+"'" });
+                }, { "selector" : "room = '"+example_webrtc_config.room+"'" });
 		// subscribe to private signaling messages from other users
                 stompClient.subscribe('/user/queue/webrtc', function(frame){
 			console.log("Received private message");
