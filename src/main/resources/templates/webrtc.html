@@ -172,7 +172,8 @@
 	function func_webrtc_receivedatahandler(message) {
 		setDataChannelEnabled(); // as soon as we receive something we can assume the data channel has been enabled
 		console.log('Received data channel message from user "'+message['fromUserID']+'"\n '+message['body']);
-		document.getElementById('receivedPeerMessages').value=document.getElementById('receivedPeerMessages').value()+'\n'+message['fromUserID']+': '+message['body'];
+		alert(document.getElementById('receivedPeerMessages').value);
+		document.getElementById('receivedPeerMessages').value=document.getElementById('receivedPeerMessages').value+'\n'+message['fromUserID']+': '+message['body'];
 	}
 	
 	/** Send signaling message via signaling channel **/
