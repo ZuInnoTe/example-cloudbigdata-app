@@ -31,6 +31,7 @@ import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
+import org.springframework.messaging.simp.config.StompBrokerRelayRegistration;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.config.annotation.AbstractWebSocketMessageBrokerConfigurer;
 
@@ -44,13 +45,33 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 @Autowired
 private ConfigManagerInterface configManager;
 
+
+
 	/**
 	* Configure a message broker for web socket message, so we can interact more loosely coupled with the backend
 	*
 	*/
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry config) {
-		config.enableSimpleBroker("/topic","/queue");
+		if (new String("embedded").equals(configManager.getValue("messaging.stomp.type"))) {
+			String destinations = configManager.getValue("messaging.stomp.broker.register.destinations");
+			String[] destinationArray = destinations.split(",");
+			config.enableSimpleBroker(destinationArray);
+		} else { //== extern
+			
+			String destinations = configManager.getValue("messaging.stomp.broker.register.destinations");
+			String[] destinationArray = destinations.split(",");
+			// StompBrokerRelayRegistration myStompBrokerRelayRegistration = config.enableStompBrokerRelay(destinationArray);
+	 StompBrokerRelayRegistration myStompBrokerRelayRegistration = config.enableStompBrokerRelay("/topic","/queue","/exchange/");
+			myStompBrokerRelayRegistration.setRelayHost(configManager.getValue("messaging.stomp.relay-host"));
+			myStompBrokerRelayRegistration.setRelayPort(new Integer(configManager.getValue("messaging.stomp.relay-port")).intValue());			
+			myStompBrokerRelayRegistration.setClientLogin(configManager.getValue("messaging.stomp.clientlogin"));
+			myStompBrokerRelayRegistration.setClientPasscode(configManager.getValue("messaging.stomp.clientpasscode"));
+			myStompBrokerRelayRegistration.setSystemHeartbeatReceiveInterval(new Long(configManager.getValue("messaging.stomp.heartbeat-receive-interval")).longValue());
+			myStompBrokerRelayRegistration.setSystemHeartbeatSendInterval(new Long(configManager.getValue("messaging.stomp.heartbeat-send-interval")).longValue());
+			myStompBrokerRelayRegistration.setSystemLogin(configManager.getValue("messaging.stomp.systemlogin"));
+			myStompBrokerRelayRegistration.setSystemPasscode(configManager.getValue("messaging.stomp.systempasscode"));
+		}
 		config.setApplicationDestinationPrefixes("/app");
 	}
 

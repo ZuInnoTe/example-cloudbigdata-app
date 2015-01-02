@@ -3,6 +3,8 @@
 <head>
     <title>Hello WebRTC</title>
     <link href="/cloudbigdata/css/simplelayout.css" type="text/css" rel="stylesheet" />
+    <meta name="webrtctopic" th:content="${webrtcTopic}"/>
+    <meta name="webrtcprivatequeue" th:content="${webrtcPrivateQueue}"/>
     <style>
 	.classoutgoingvideo {
 		width: 200px;
@@ -22,6 +24,8 @@
 	 // <![CDATA[
 	var example_webrtc_config = {
 		ownUserId: null, /** set after successful web socket connect **/
+		topic: $("meta[name='webrtctopic']").attr("content"), /** topic for publishing join messages **/
+		privatequeue: '/user'+$("meta[name='webrtcprivatequeue']").attr("content"), /** private queue for user signaling messages **/
 		room: 'demoroom', /** room **/
 		enable_videovoicechat: true, /** enable video/voice chat functionality of webrtc **/
 		enable_datachannel: true, /** enable data channel of webrtc **/
@@ -71,7 +75,7 @@
         function connect() {
             var socket = new SockJS('/cloudbigdata/wswebrtc');
             stompClient = Stomp.over(socket);
-            stompClient.connect({},function(frame) {
+            stompClient.connect({login: 'guest',passcode: 'guest'},function(frame) {
                 console.log('Connected: ' + frame);
 		example_webrtc_config.ownUserId=frame.headers['user-name'];
 		console.log("Initializing WebRTC for user: "+example_webrtc_config.ownUserId);
@@ -81,7 +85,7 @@
 		// subscribe to webrtc conversions in room "demogroup", i.e. to all messages to the topic with room=demogroup
 		// hint: this does not work with spring simple message broker, but only if you attach a full-fledge message broker
 		// simple message broker ignores selectors for subscriptions
-                stompClient.subscribe('/topic/webrtc', function(frame){
+                stompClient.subscribe(example_webrtc_config.topic, function(frame){
 			console.log("Received message for all users");
 			console.log(frame);
 			
@@ -95,7 +99,7 @@
 		
                 }, { "selector" : "room = '"+example_webrtc_config.room+"'" });
 		// subscribe to private signaling messages from other users
-                stompClient.subscribe('/user/queue/webrtc', function(frame){
+                stompClient.subscribe(example_webrtc_config.privatequeue, function(frame){
 			console.log("Received private message");
 			console.log(frame);
 			if (frame.command=='MESSAGE') {

@@ -23,6 +23,8 @@
 
 package org.zuinnote.cloudbigdata.controller;
 
+import org.zuinnote.cloudbigdata.configmanager.ConfigManagerInterface;
+
 import java.util.Collection;
 
 import org.springframework.stereotype.Controller;
@@ -49,7 +51,9 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 public class MainController {
     private @Autowired ConfigurableApplicationContext appContext;
-
+    
+    @Autowired
+    private ConfigManagerInterface configManager;
 
     @RequestMapping("/cloudbigdata/main")
     public String main(HttpServletRequest request, @RequestParam(value="name", required=false, defaultValue="World") String name, Model model) {
@@ -90,6 +94,9 @@ public class MainController {
 
    @RequestMapping("/cloudbigdata/webrtc")
     public String webrtc(Model model) {
+	// provide some configuration information to the website
+	model.addAttribute("webrtcTopic", configManager.getValue("messaging.stomp.webrtc.topic"));
+	model.addAttribute("webrtcPrivateQueue", configManager.getValue("messaging.stomp.webrtc.privatequeue"));
         return "webrtc";
     }
 

@@ -23,6 +23,8 @@
 
 package org.zuinnote.cloudbigdata.websocket;
 
+import org.zuinnote.cloudbigdata.configmanager.ConfigManagerInterface;
+
 import org.springframework.messaging.handler.annotation.MessageMapping;
 
 import org.springframework.messaging.handler.annotation.Headers;
@@ -41,6 +43,9 @@ public class WebSocketController {
 
    
    private final SimpMessageSendingOperations messagingTemplate;
+
+    @Autowired
+    private ConfigManagerInterface configManager;
     
     @Autowired
     public WebSocketController(SimpMessageSendingOperations messagingTemplate) {
@@ -60,18 +65,19 @@ public class WebSocketController {
 
     /** Websocket/Sock.js endpoint for webrtc (see also configuration) **/
     @MessageMapping("/cloudbigdata/wswebrtc")
-    /** Message will be sent to a message-driven middleware **/
-    @SendTo("/topic/webrtc")
+    /** Message will be sent to a topic or a private user queue depending on destination **/
     public void webrtc(Principal p, @Headers Map headers, WebRTCSignalingMessage message) throws Exception {
-	/** set the sender on server side so nobody is able to impersonate other users **/
-	message.setFromUserID(p.getName());
-	/** forward it to all users if no destination user is set **/
-	if ("".equals(message.getToUserID())) {
-		messagingTemplate.convertAndSend("/topic/webrtc", message, headers);
-	} else {
-		/** forward it to the private queue of the destination user if it is a private signaling message **/
-	 	messagingTemplate.convertAndSendToUser(message.getToUserID(), "/queue/webrtc", message, headers);
-        }
+	if (p!=null) {
+		/** set the sender on server side so nobody is able to impersonate other users **/
+		message.setFromUserID(p.getName());
+		/** forward it to all users if no destination user is set **/
+		if ("".equals(message.getToUserID())) {
+			messagingTemplate.convertAndSend(configManager.getValue("messaging.stomp.webrtc.topic"), message, headers);
+		} else {
+			/** forward it to the private queue of the destination user if it is a private signaling message **/
+	 		messagingTemplate.convertAndSendToUser(message.getToUserID(), configManager.getValue("messaging.stomp.webrtc.privatequeue"), message, headers);
+        	}
+	}
     }
 
 
