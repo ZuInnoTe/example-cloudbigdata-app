@@ -61,9 +61,8 @@ private ConfigManagerInterface configManager;
 			
 			String destinations = configManager.getValue("messaging.stomp.broker.register.destinations");
 			String[] destinationArray = destinations.split(",");
-			// StompBrokerRelayRegistration myStompBrokerRelayRegistration = config.enableStompBrokerRelay(destinationArray);
-	 StompBrokerRelayRegistration myStompBrokerRelayRegistration = config.enableStompBrokerRelay("/topic","/queue","/exchange/");
-			myStompBrokerRelayRegistration.setRelayHost(configManager.getValue("messaging.stomp.relay-host"));
+			 StompBrokerRelayRegistration myStompBrokerRelayRegistration = config.enableStompBrokerRelay(destinationArray);
+	 		myStompBrokerRelayRegistration.setRelayHost(configManager.getValue("messaging.stomp.relay-host"));
 			myStompBrokerRelayRegistration.setRelayPort(new Integer(configManager.getValue("messaging.stomp.relay-port")).intValue());			
 			myStompBrokerRelayRegistration.setClientLogin(configManager.getValue("messaging.stomp.clientlogin"));
 			myStompBrokerRelayRegistration.setClientPasscode(configManager.getValue("messaging.stomp.clientpasscode"));
