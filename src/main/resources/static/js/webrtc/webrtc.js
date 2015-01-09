@@ -328,7 +328,7 @@ function WebRTC(webrtcconfig) {
 	this.enableUserMedia=function() {
 		webrtcconfig.status_handler(webrtc_status_codes.INITIALIZE_USERMEDIA, webrtc_status_messages.INITIALIZE_USERMEDIA);
 		
-		// then deal with a weird, positional error handling API
+		// uses adapter.js
 		getUserMedia(this.config.user_media, 
     		// success callback
     		function (stream) {
