@@ -287,26 +287,8 @@ function Peer(userid,webrtcconfig) {
 			console.log("WebRTC: Received signaling message for a non-existing PeerConnection");		
 			return;
 		}
-		if (message.type === 'offer') {
-			 thisPeer.pc.setRemoteDescription(new RTCSessionDescription(message),
-						function() {
-							console.log('WebRTC: Set Session Descriptor succesful (offer) for user "'+thisPeer.userid+'"');
-						}, 
-						function(error) {
-							console.log('WebRTC: Set Session Descriptor error (offer) for user "'+thisPeer.userid+'": '+error);
-						}
-			);
-		} else if (message.type === 'answer') {
-				thisPeer.pc.setRemoteDescription(new RTCSessionDescription(message),
-						function() {
-							console.log('WebRTC: Set Session Descriptor succesful (answer) for user "'+thisPeer.userid+'"');
-						}, 
-						function(error) {
-							console.log('WebRTC: Set Session Descriptor error (answer) for user "'+thisPeer.userid+'": '+error);
-						}
-				
-			);
-		} else if (message.type === 'candidate') {
+	
+		 if (message.candidate) {
 			thisPeer.pc.addIceCandidate(new RTCIceCandidate(message),function() {
 							console.log('WebRTC: OnAddIceCandidate succesful for user "'+thisPeer.userid+'"');
 						}, 
@@ -314,7 +296,13 @@ function Peer(userid,webrtcconfig) {
 							console.log('WebRTC: OnAddIceCandidate error for user "'+thisPeer.userid+'": '+error);
 						});
 		} else {
-			console.log('WebRTC: Received unknown signaling message type: ' + message);
+				thisPeer.pc.setRemoteDescription(new RTCSessionDescription(message),
+						function() {
+							console.log('WebRTC: Set Session Descriptor succesful for user "'+thisPeer.userid+'"');
+						}, 
+						function(error) {
+							console.log('WebRTC: Set Session Descriptor error for user "'+thisPeer.userid+'": '+error);
+						});
 		}
 	}
 	this.pc.onicecandidate = this.onIceCandidate;
@@ -339,13 +327,7 @@ function WebRTC(webrtcconfig) {
 	/*** Video/Voice functions **/
 	this.enableUserMedia=function() {
 		webrtcconfig.status_handler(webrtc_status_codes.INITIALIZE_USERMEDIA, webrtc_status_messages.INITIALIZE_USERMEDIA);
-		var getUserMedia = navigator.getUserMedia || navigator.mozGetUserMedia || navigator.webkitGetUserMedia;
-		if (getUserMedia) {
-    			getUserMedia = getUserMedia.bind(navigator);
-		} else {
-			webrtcconfig.error_handler(webrtc_error_codes.USERMEDIA_NOTSUPPORTED, webrtc_error_messages.USERMEDIA_NOTSUPPORTED);
-	    	}
-
+		
 		// then deal with a weird, positional error handling API
 		getUserMedia(this.config.user_media, 
     		// success callback
