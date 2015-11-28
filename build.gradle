@@ -74,6 +74,6 @@ dependencies {
     // thymeleaf
     compile("org.thymeleaf:thymeleaf-spring4:2.1.4.RELEASE")
     // testing
-    testCompile("junit:junit:4.12")
+    testCompile("junit:junit")
 }
 
