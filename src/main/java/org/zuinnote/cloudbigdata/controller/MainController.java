@@ -33,10 +33,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
 import org.springframework.security.access.prepost.PreAuthorize;
-import  org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import org.springframework.security.core.userdetails.UserDetails;
 
 
 import javax.servlet.http.HttpServletRequest;
@@ -56,9 +58,9 @@ public class MainController {
     private ConfigManagerInterface configManager;
 
     @RequestMapping("/cloudbigdata/main")
-    public String main(HttpServletRequest request, @RequestParam(value="name", required=false, defaultValue="World") String name, Model model) {
+    public String main(@AuthenticationPrincipal UserDetails activeUser, @RequestParam(value="name", required=false, defaultValue="World") String name, Model model) {
         model.addAttribute("name", name);
-	model.addAttribute("principalname", request.getUserPrincipal().getName());
+	model.addAttribute("principalname", activeUser.getUsername());
         return "main";
     }
 
@@ -79,9 +81,11 @@ public class MainController {
         return "jpa";
     }
 
-@PreAuthorize("hasAuthority('admins')")
-       @RequestMapping("/cloudbigdata/administrator")
-    public String administrator(Model model) {
+   @PreAuthorize("hasAuthority('ROLE_ADMINS')")
+   @RequestMapping("/cloudbigdata/administrator")
+    public String administrator(@AuthenticationPrincipal UserDetails activeUser, Model model) {
+	model.addAttribute("principalname", activeUser.getUsername());
+	model.addAttribute("authorities", activeUser.getAuthorities());
         return "administrator";
     }
 

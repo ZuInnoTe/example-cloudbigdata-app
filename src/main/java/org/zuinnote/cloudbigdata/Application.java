@@ -41,6 +41,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -71,6 +72,7 @@ import org.zuinnote.cloudbigdata.usermanager.UserManagerFactory;
 @EnableJpaRepositories
 @ComponentScan
 @EnableAutoConfiguration
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class Application {
 
 private static Logger log = LogManager.getLogger(Application.class.getName());

@@ -41,8 +41,8 @@ import org.zuinnote.cloudbigdata.configmanager.ConfigManagerInterface;
 import  org.zuinnote.cloudbigdata.usermanager.OpenIDUserDetailsService;
 
 @Configuration
-@EnableWebSecurity
 @EnableWebMvcSecurity
+@EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 @Autowired
@@ -96,7 +96,7 @@ private ConfigurableApplicationContext appContext;
 
     @Override
     protected void configure(AuthenticationManagerBuilder authManagerBuilder) throws Exception {
-	// check ldap - only ldap users and not openid users, because there information is stored in ldap only for completeness
+	// check ldap - only ldap users and not openid users, because their information is stored in ldap only for completeness
 		if (new String("embedded").equals(configManager.getValue("ldap.type"))) {
 			authManagerBuilder
 				.ldapAuthentication()

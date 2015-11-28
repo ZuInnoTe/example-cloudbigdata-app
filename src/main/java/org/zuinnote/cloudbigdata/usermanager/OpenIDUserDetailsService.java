@@ -76,15 +76,17 @@ private UserManagerInterface userManager;
 		log.info("returning open id user");
 		// check group memberships
 		Collection<String> groupMemberShips=	userManager.getUserGroupMemberShip(foundUser);
+		groupMemberShips.add("ROLE_USER");
+		String[] authoritiesArray = groupMemberShips.toArray(new String[1]);
 		// if yes return openid user with permissions
-		return new org.springframework.security.core.userdetails.User(foundUser.getUserID(), "NOTUSED", AuthorityUtils.createAuthorityList("ROLE_USER"));
+		return new org.springframework.security.core.userdetails.User(foundUser.getUserID(), "OPENID", AuthorityUtils.createAuthorityList(authoritiesArray));
 	}	
   	// return user with minimum permission
 	log.info("creating new open id user in user manager");
   	// if not add openid user to user manager with minimum permissions. The idea here is that you can authorize openid users for accessing different resources of the system
  	org.zuinnote.cloudbigdata.usermanager.User createdUser = userManager.createUser(new org.zuinnote.cloudbigdata.usermanager.User(token.getName(),configManager.getValue("ldap.openIDUsers"),"",""));
 	if (createdUser!=null) {
-         	return new org.springframework.security.core.userdetails.User(createdUser.getUserID(), "NOTUSED", AuthorityUtils.createAuthorityList("ROLE_USER"));
+         	return new org.springframework.security.core.userdetails.User(createdUser.getUserID(), "OPENID", AuthorityUtils.createAuthorityList("ROLE_USER"));
 	}
 	return null;
      }

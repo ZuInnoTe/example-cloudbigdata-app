@@ -13,7 +13,9 @@
 		<div id="menu" th:include="menu :: menu">
 		</div>
 		<div id="content">
-			Welcome to the administrator page
+			Welcome to the administrator page <br />
+			<p th:text="'Principal Name ' + ${principalname} + '!'" />
+			<p th:text="'Granted Authorities: ' + ${authorities}" /> 
 		</div>
 		<div id="footer" th:include="footer :: footer">
 		</div>
