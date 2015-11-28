@@ -28,7 +28,9 @@ package org.zuinnote.cloudbigdata.configmanager;
 *
 */
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -39,7 +41,7 @@ import java.util.Properties;
 
 public class ConfigManagerFactory {
 	public static final String ENV_VAR = "EXAMPLE_CLOUDBIGDATA_CONF";
-	private static Logger log = Logger.getLogger(ConfigManagerFactory.class.getName());
+	private static Logger log = LogManager.getLogger(ConfigManagerFactory.class.getName());
 	private static File configFile;
 
 	private static ConfigManagerInterface currentConfigManager=null;
@@ -50,12 +52,12 @@ public class ConfigManagerFactory {
 			return currentConfigManager;
 		}
 		if (System.getenv().get(ENV_VAR)==null) {
-			log.error("Cannot find configuration file in environment variable \""+ENV_VAR+"\"");
+			log.error("Cannot find configuration file in environment variable \"{}\"", ()->ENV_VAR);
 		}
 		// read config file
 		configFile=new File(System.getenv().get(ENV_VAR));
 		if (configFile.exists()==false) {
-			log.error("Configuration file \""+System.getenv().get(ENV_VAR)+"\" does not exist");
+			log.error("Configuration file \"{}\" does not exist", ()->System.getenv().get(ENV_VAR));
 		}
 		// properties
 			Properties configProperties = new Properties();

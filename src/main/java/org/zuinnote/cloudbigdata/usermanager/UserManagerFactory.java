@@ -21,7 +21,8 @@
 * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 **/
 package org.zuinnote.cloudbigdata.usermanager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
 * This factory creates User Managers depending on configuration (e.g. LDAP authentication/authorization)
@@ -31,7 +32,7 @@ import org.apache.log4j.Logger;
 
 public class UserManagerFactory {
 
-	private static Logger log = Logger.getLogger(UserManagerFactory.class.getName());
+	private static Logger log = LogManager.getLogger(UserManagerFactory.class.getName());
 	private static UserManagerInterface currentUserManager;
 
 	public static UserManagerInterface getUserManager() {

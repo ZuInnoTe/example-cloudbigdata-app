@@ -37,7 +37,9 @@ import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import  org.springframework.beans.factory.annotation.Autowired;
 
 
@@ -53,7 +55,7 @@ import org.zuinnote.cloudbigdata.configmanager.ConfigManagerInterface;
 
 public class UserManagerLDAP implements UserManagerInterface {
 	
-	private static Logger log = Logger.getLogger(UserManagerLDAP.class.getName());
+	private static Logger log = LogManager.getLogger(UserManagerLDAP.class.getName());
 	@Autowired
 	private ConfigManagerInterface configManager;
 	@Autowired
@@ -78,7 +80,7 @@ public class UserManagerLDAP implements UserManagerInterface {
 		attr.put("uid", cleanedUserID);
      		attr.put("sn", cleanedUserID);
 		DistinguishedName userDN = new DistinguishedName("uid="+cleanedUserID+","+theUser.getType());
-		log.debug(userDN);
+		log.debug(()->userDN);
     		ldapTemplate.bind(userDN, null, attr);
 		return new User(cleanedUserID, theUser.getType(), theUser.getFirstName(), theUser.getLastName());
 	}

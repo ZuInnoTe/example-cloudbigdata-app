@@ -23,7 +23,6 @@
 
 package org.zuinnote.cloudbigdata.config;
 
-import org.apache.log4j.Logger;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -52,7 +51,6 @@ private ConfigManagerInterface configManager;
 private LdapContextSource ldapContextSource;
 @Autowired 
 private ConfigurableApplicationContext appContext;
-private static Logger log = Logger.getLogger(WebSecurityConfig.class.getName());
 
 
     @Override

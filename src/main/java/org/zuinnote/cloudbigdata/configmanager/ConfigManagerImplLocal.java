@@ -25,7 +25,9 @@
 package org.zuinnote.cloudbigdata.configmanager;
 
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 
 import java.util.Iterator;
 import java.util.Properties;
@@ -38,7 +40,7 @@ import java.util.Properties;
 */
 
 public class ConfigManagerImplLocal extends AbstractConfigManager {
-	private static Logger log = Logger.getLogger(ConfigManagerImplLocal.class.getName());
+	private static Logger log = LogManager.getLogger(ConfigManagerImplLocal.class.getName());
 	// get local properties from file
 	public ConfigManagerImplLocal(Properties localProperties) {
 		this.getConfigurationLock();

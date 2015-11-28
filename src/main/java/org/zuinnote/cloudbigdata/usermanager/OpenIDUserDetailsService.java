@@ -32,7 +32,9 @@ package org.zuinnote.cloudbigdata.usermanager;
 import  org.springframework.beans.factory.annotation.Autowired;
 import java.util.Collection;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 
 
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -53,7 +55,7 @@ import org.zuinnote.cloudbigdata.configmanager.ConfigManagerInterface;
          AuthenticationUserDetailsService<OpenIDAuthenticationToken> {
 
 
-private static Logger log = Logger.getLogger(OpenIDUserDetailsService.class.getName());
+private static Logger log = LogManager.getLogger(OpenIDUserDetailsService.class.getName());
 
 @Autowired
 private ConfigManagerInterface configManager;

@@ -23,7 +23,6 @@
 
 package org.zuinnote.cloudbigdata.config;
 
-import org.apache.log4j.Logger;
 
 import org.springframework.context.annotation.Configuration;
 import  org.springframework.beans.factory.annotation.Autowired;

@@ -29,7 +29,6 @@
 
 package org.zuinnote.cloudbigdata.configmanager;
 
-import org.apache.log4j.Logger;
 
 import java.util.Collections;
 import java.util.HashMap;

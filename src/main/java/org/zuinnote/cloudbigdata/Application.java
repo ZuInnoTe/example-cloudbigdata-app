@@ -23,7 +23,9 @@
 
 package org.zuinnote.cloudbigdata;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -71,7 +73,8 @@ import org.zuinnote.cloudbigdata.usermanager.UserManagerFactory;
 @EnableAutoConfiguration
 public class Application {
 
-private static Logger log = Logger.getLogger(Application.class.getName());
+private static Logger log = LogManager.getLogger(Application.class.getName());
+
     public static void main(String[] args) {
 	// Start Spring-Application (for testing purposes)
         ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);

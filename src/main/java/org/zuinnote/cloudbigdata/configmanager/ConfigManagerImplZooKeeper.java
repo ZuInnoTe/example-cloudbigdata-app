@@ -23,7 +23,9 @@
 
 package org.zuinnote.cloudbigdata.configmanager;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 
 import java.util.Properties;
 
@@ -35,7 +37,7 @@ import java.util.Properties;
 */
 
 public class ConfigManagerImplZooKeeper extends AbstractConfigManager {
-	private static Logger log = Logger.getLogger(ConfigManagerImplZooKeeper.class.getName());
+	private static Logger log = LogManager.getLogger(ConfigManagerImplZooKeeper.class.getName());
 
 	// you have to provide properties for ZooKeeper basic configuration
 	public ConfigManagerImplZooKeeper(Properties zooKeeperProperties) {
