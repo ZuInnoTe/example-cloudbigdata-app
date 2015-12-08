@@ -2,14 +2,16 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'spring-boot'
-//apply plugin: 'war'
-//	war {
-//    		baseName = 'example-cloudbigdata-app-webinterface-env'
- //   		version =  '0.2.0'
-//	}
-
+apply plugin: 'war'
+	
 sourceCompatibility = 1.8
 compileJava.options.encoding = 'UTF-8'
+
+war {
+    baseName = 'example-cloudbigdata-app-webinterface'
+    version =  '0.2.0'
+}
+
 
 jar {
     baseName = 'example-cloudbigdata-app-webinterface'
@@ -29,6 +31,9 @@ buildscript {
     }
 }
 
+configurations {
+    providedRuntime
+}
 
 
 repositories {
@@ -79,7 +84,9 @@ dependencies {
     }
     // thymeleaf
     compile("org.thymeleaf:thymeleaf-spring4:2.1.4.RELEASE")
+    // provided in container
+    providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
     // testing
-    testCompile("junit:junit")
+    testCompile("junit:junit:4+")
 }
 
