@@ -44,9 +44,9 @@ import  org.springframework.beans.factory.annotation.Autowired;
 
 
 import org.springframework.ldap.core.LdapTemplate;
-import org.springframework.ldap.core.DistinguishedName;
 import org.springframework.ldap.core.ContextMapper;
 import org.springframework.ldap.core.DirContextAdapter;
+import org.springframework.ldap.support.LdapNameBuilder;
 import javax.naming.Name;
 import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
@@ -79,7 +79,7 @@ public class UserManagerLDAP implements UserManagerInterface {
         	attr.put(obclattr);
 		attr.put("uid", cleanedUserID);
      		attr.put("sn", cleanedUserID);
-		DistinguishedName userDN = new DistinguishedName("uid="+cleanedUserID+","+theUser.getType());
+		Name userDN = LdapNameBuilder.newInstance().add("uid", cleanedUserID+","+theUser.getType()).build();
 		log.debug(()->userDN);
     		ldapTemplate.bind(userDN, null, attr);
 		return new User(cleanedUserID, theUser.getType(), theUser.getFirstName(), theUser.getLastName());
@@ -95,9 +95,9 @@ public class UserManagerLDAP implements UserManagerInterface {
 	public User findUser(User theUser) {
 		
 		List foundUserList=ldapTemplate.search(
-         	"","uid="+cleanUserID(theUser.getUserID()),new ContextMapper() {
+         	"","uid="+cleanUserID(theUser.getUserID()),new ContextMapper<User>() {
 			
-           	 	public Object mapFromContext(Object ctx) {
+           	 	public User mapFromContext(Object ctx) {
 				DirContextAdapter theCtx = (DirContextAdapter)ctx;
 				String currentFirstName="";
 				if (theCtx.attributeExists("firstName")) {
@@ -132,9 +132,9 @@ public class UserManagerLDAP implements UserManagerInterface {
 	*/
 	public Collection<String> getUserGroupMemberShip(User theUser) {
 	List foundGroupList=ldapTemplate.search(
-        	"","uniqueMember=uid="+cleanUserID(theUser.getUserID())+","+theUser.getType()+","+configManager.getValue("ldap.base"),new ContextMapper() {
+        	"","uniqueMember=uid="+cleanUserID(theUser.getUserID())+","+theUser.getType()+","+configManager.getValue("ldap.base"),new ContextMapper<String>() {
 			
-           	 	public Object mapFromContext(Object ctx) {
+           	 	public String mapFromContext(Object ctx) {
 				DirContextAdapter theCtx = (DirContextAdapter)ctx;
 				String currentGroupName="";
 				if (theCtx.attributeExists("cn")) {
@@ -149,7 +149,7 @@ public class UserManagerLDAP implements UserManagerInterface {
 				
             		}
                 });
-		HashSet<String> resultSet = new HashSet();
+		HashSet<String> resultSet = new HashSet<String>();
 		Iterator resultListIterator = foundGroupList.iterator();
 		while (resultListIterator.hasNext()) {
 			Object currentItem =resultListIterator.next();

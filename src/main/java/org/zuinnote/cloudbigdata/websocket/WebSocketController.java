@@ -66,7 +66,7 @@ public class WebSocketController {
     /** Websocket/Sock.js endpoint for webrtc (see also configuration) **/
     @MessageMapping("/cloudbigdata/wswebrtc")
     /** Message will be sent to a topic or a private user queue depending on destination **/
-    public void webrtc(Principal p, @Headers Map headers, WebRTCSignalingMessage message) throws Exception {
+    public void webrtc(Principal p, @Headers Map<String,Object> headers, WebRTCSignalingMessage message) throws Exception {
 	if (p!=null) {
 		/** set the sender on server side so nobody is able to impersonate other users **/
 		message.setFromUserID(p.getName());
