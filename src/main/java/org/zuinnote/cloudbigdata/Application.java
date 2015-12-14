@@ -49,7 +49,8 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.ldap.core.LdapTemplate;
 
-
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
@@ -68,6 +69,7 @@ import org.zuinnote.cloudbigdata.usermanager.OpenIDUserDetailsService;
 import org.zuinnote.cloudbigdata.usermanager.UserManagerInterface;
 import org.zuinnote.cloudbigdata.usermanager.UserManagerFactory;
 
+@SpringBootApplication
 @Configuration
 @EnableJpaRepositories
 @ComponentScan
@@ -80,17 +82,6 @@ private static Logger log = LogManager.getLogger(Application.class.getName());
     public static void main(String[] args) {
 	// Start Spring-Application (for testing purposes)
         ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
-	
-	// Load test data for testing purposes
-        CustomerRepository repository = context.getBean(CustomerRepository.class);
-
-        // save a couple of customers
-        repository.save(new Customer("Joe", "Doe", "USA"));
-        repository.save(new Customer("Foo", "Bar", "USA"));
-        repository.save(new Customer("Martha", "Mustermann", "Germany"));
-        repository.save(new Customer("Angela", "Merkel", "Germany"));
-	// just for checking that your application can handle proper UTF-8 data
-        repository.save(new Customer("Jörn", "Franke", "Germany"));
     }
 
     /*** Configure in-memory database for testing purposes ***/
@@ -98,6 +89,21 @@ private static Logger log = LogManager.getLogger(Application.class.getName());
     public DataSource dataSource() {
         return new EmbeddedDatabaseBuilder().setType(H2).build();
     }
+
+   /*** Enable some dome if you start it as an embedded version (not as war) **/
+	@Bean
+	public CommandLineRunner demo(CustomerRepository repository) {
+		return (args) -> {
+				// Load test data for testing purposes
+                            	// save a couple of customers
+                                repository.save(new Customer("Joe", "Doe", "USA"));
+                                repository.save(new Customer("Foo", "Bar", "USA"));
+                                repository.save(new Customer("Martha", "Mustermann", "Germany"));
+                                repository.save(new Customer("Angela", "Merkel", "Germany"));
+	                        // just for checking that your application can handle proper UTF-8 data
+                                repository.save(new Customer("Jörn", "Franke", "Germany"));
+		};
+	}
 
     /** Configuration bean that can be used throughout the application for its configuration **/
     @Bean
@@ -181,6 +187,8 @@ private static Logger log = LogManager.getLogger(Application.class.getName());
         hibernateJpaVendorAdapter.setDatabase(Database.H2);
         return hibernateJpaVendorAdapter;
     }
+
+
 
     
    
